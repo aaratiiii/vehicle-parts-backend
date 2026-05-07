@@ -40,6 +40,8 @@ public class PartsController : ControllerBase
         {
             Name = model.Name,
             PartNumber = model.PartNumber,
+            Category = model.Category,
+            VendorName = model.VendorName,
             Price = model.Price,
             StockQuantity = model.StockQuantity
         };
@@ -60,6 +62,8 @@ public class PartsController : ControllerBase
 
         part.Name = model.Name;
         part.PartNumber = model.PartNumber;
+        part.Category = model.Category;
+        part.VendorName = model.VendorName;
         part.Price = model.Price;
         part.StockQuantity = model.StockQuantity;
 

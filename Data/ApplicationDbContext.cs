@@ -14,4 +14,5 @@ public class ApplicationDbContext : DbContext
     public DbSet<Vendor> Vendors { get; set; }
     public DbSet<Customer> Customers { get; set; }
     public DbSet<Vehicle> Vehicles { get; set; }
+    public DbSet<User> Users { get; set; }
 }
