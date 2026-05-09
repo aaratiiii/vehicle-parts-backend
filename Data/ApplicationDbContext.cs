@@ -15,4 +15,11 @@ public class ApplicationDbContext : DbContext
     public DbSet<Customer> Customers { get; set; }
     public DbSet<Vehicle> Vehicles { get; set; }
     public DbSet<User> Users { get; set; }
+    public DbSet<SalesInvoice> SalesInvoices { get; set; }
+    
+    public DbSet<SalesInvoiceItem> SalesInvoiceItems { get; set; }
+    
+    public DbSet<PurchaseInvoice> PurchaseInvoices { get; set; }
+    
+    public DbSet<PurchaseInvoiceItem> PurchaseInvoiceItems { get; set; }
 }

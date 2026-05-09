@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using VehicleParts.API.Data;
+using VehicleParts.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<EmailService>();
 
 var app = builder.Build();
 
