@@ -25,6 +25,29 @@ public class SalesInvoiceController : ControllerBase
         var invoices = _context.SalesInvoices
             .Include(i => i.Items)
             .OrderByDescending(i => i.Id)
+            .Select(i => new
+            {
+                i.Id,
+                i.CustomerName,
+                i.CustomerPhone,
+                i.CustomerEmail,
+                i.VehicleNumber,
+                i.InvoiceDate,
+                i.TotalAmount,
+                i.DiscountAmount,
+                i.FinalAmount,
+                i.PaymentStatus,
+                i.EmailSent,
+                Items = i.Items.Select(item => new
+                {
+                    item.Id,
+                    item.PartId,
+                    item.PartName,
+                    item.Quantity,
+                    item.UnitPrice,
+                    item.LineTotal
+                }).ToList()
+            })
             .ToList();
 
         return Ok(invoices);
@@ -88,7 +111,9 @@ public class SalesInvoiceController : ControllerBase
         return Ok(new
         {
             message = "Sales invoice created successfully.",
-            invoice
+            invoiceId = invoice.Id,
+            customerName = invoice.CustomerName,
+            finalAmount = invoice.FinalAmount
         });
     }
 
@@ -113,13 +138,8 @@ public class SalesInvoiceController : ControllerBase
         invoice.EmailSent = true;
         _context.SaveChanges();
 
-        return Ok(new
-        {
-            message = "Invoice email sent successfully.",
-            invoice
-        });
+        return Ok(new { message = "Invoice email sent successfully." });
     }
-    
 }
 
 public class SalesInvoiceRequest

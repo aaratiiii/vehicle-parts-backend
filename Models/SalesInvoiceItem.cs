@@ -13,5 +13,4 @@ public class SalesInvoiceItem
     public decimal UnitPrice { get; set; }
     public decimal LineTotal { get; set; }
     
-    public string CustomerEmail { get; set; } = "";
 }
