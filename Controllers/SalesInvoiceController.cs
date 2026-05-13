@@ -117,6 +117,75 @@ public class SalesInvoiceController : ControllerBase
         });
     }
 
+    [HttpGet("report/daily")]
+    public IActionResult GetDailyReport()
+    {
+        var today = DateTime.UtcNow.Date;
+
+        var invoices = _context.SalesInvoices
+            .Where(i => i.InvoiceDate.Date == today)
+            .ToList();
+
+        return Ok(new
+        {
+            reportType = "Daily Report",
+            date = today.ToString("yyyy-MM-dd"),
+            totalInvoices = invoices.Count,
+            totalSales = invoices.Sum(i => i.TotalAmount),
+            totalDiscount = invoices.Sum(i => i.DiscountAmount),
+            finalIncome = invoices.Sum(i => i.FinalAmount),
+            paidInvoices = invoices.Count(i => i.PaymentStatus == "Paid"),
+            pendingInvoices = invoices.Count(i => i.PaymentStatus == "Pending"),
+            creditInvoices = invoices.Count(i => i.PaymentStatus == "Credit")
+        });
+    }
+
+    [HttpGet("report/monthly")]
+    public IActionResult GetMonthlyReport()
+    {
+        var now = DateTime.UtcNow;
+
+        var invoices = _context.SalesInvoices
+            .Where(i => i.InvoiceDate.Month == now.Month && i.InvoiceDate.Year == now.Year)
+            .ToList();
+
+        return Ok(new
+        {
+            reportType = "Monthly Report",
+            month = now.ToString("MMMM yyyy"),
+            totalInvoices = invoices.Count,
+            totalSales = invoices.Sum(i => i.TotalAmount),
+            totalDiscount = invoices.Sum(i => i.DiscountAmount),
+            finalIncome = invoices.Sum(i => i.FinalAmount),
+            paidInvoices = invoices.Count(i => i.PaymentStatus == "Paid"),
+            pendingInvoices = invoices.Count(i => i.PaymentStatus == "Pending"),
+            creditInvoices = invoices.Count(i => i.PaymentStatus == "Credit")
+        });
+    }
+
+    [HttpGet("report/yearly")]
+    public IActionResult GetYearlyReport()
+    {
+        var now = DateTime.UtcNow;
+
+        var invoices = _context.SalesInvoices
+            .Where(i => i.InvoiceDate.Year == now.Year)
+            .ToList();
+
+        return Ok(new
+        {
+            reportType = "Yearly Report",
+            year = now.Year,
+            totalInvoices = invoices.Count,
+            totalSales = invoices.Sum(i => i.TotalAmount),
+            totalDiscount = invoices.Sum(i => i.DiscountAmount),
+            finalIncome = invoices.Sum(i => i.FinalAmount),
+            paidInvoices = invoices.Count(i => i.PaymentStatus == "Paid"),
+            pendingInvoices = invoices.Count(i => i.PaymentStatus == "Pending"),
+            creditInvoices = invoices.Count(i => i.PaymentStatus == "Credit")
+        });
+    }
+
     [HttpPost("{id}/send-email")]
     public IActionResult SendInvoiceEmail(int id)
     {
