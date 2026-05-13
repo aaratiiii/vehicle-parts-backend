@@ -123,21 +123,39 @@ public class StaffController : ControllerBase
     [HttpGet("customers")]
     public IActionResult GetCustomers()
     {
-        var result = _context.Customers
+        var customers = _context.Customers
+            .OrderByDescending(c => c.Id)
             .Select(c => new
             {
                 c.Id,
+                FullName = c.FullName,
                 Name = c.FullName,
+                PhoneNumber = c.PhoneNumber,
                 Phone = c.PhoneNumber,
                 c.Email,
+
                 VehicleNumber = _context.Vehicles
                     .Where(v => v.CustomerId == c.Id)
                     .Select(v => v.VehicleNumber)
-                    .FirstOrDefault()
+                    .FirstOrDefault(),
+
+                RecentPurchase = _context.SalesInvoices
+                    .Where(i => i.CustomerPhone == c.PhoneNumber)
+                    .OrderByDescending(i => i.InvoiceDate)
+                    .Select(i => i.Items.Any()
+                        ? i.Items.Select(item => item.PartName).FirstOrDefault()
+                        : "No Purchase")
+                    .FirstOrDefault() ?? "No Purchase",
+
+                CreditStatus = _context.SalesInvoices
+                    .Any(i => i.CustomerPhone == c.PhoneNumber &&
+                              i.PaymentStatus != "Paid")
+                    ? "Pending"
+                    : "Clear"
             })
             .ToList();
 
-        return Ok(result);
+        return Ok(customers);
     }
 }
 

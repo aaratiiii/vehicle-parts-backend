@@ -22,4 +22,10 @@ public class ApplicationDbContext : DbContext
     public DbSet<PurchaseInvoice> PurchaseInvoices { get; set; }
     
     public DbSet<PurchaseInvoiceItem> PurchaseInvoiceItems { get; set; }
+    
+    public DbSet<Appointment> Appointments { get; set; }
+    
+    public DbSet<UnavailablePartRequest> UnavailablePartRequests { get; set; }
+    
+    public DbSet<ServiceReview> ServiceReviews { get; set; }
 }
