@@ -12,11 +12,17 @@ public class SalesInvoiceController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
     private readonly EmailService _emailService;
+    private readonly InvoicePdfService _invoicePdfService;
 
-    public SalesInvoiceController(ApplicationDbContext context, EmailService emailService)
+    public SalesInvoiceController(
+        ApplicationDbContext context,
+        EmailService emailService,
+        InvoicePdfService invoicePdfService
+    )
     {
         _context = context;
         _emailService = emailService;
+        _invoicePdfService = invoicePdfService;
     }
 
     [HttpGet]
@@ -189,7 +195,9 @@ public class SalesInvoiceController : ControllerBase
     [HttpPost("{id}/send-email")]
     public IActionResult SendInvoiceEmail(int id)
     {
-        var invoice = _context.SalesInvoices.FirstOrDefault(i => i.Id == id);
+        var invoice = _context.SalesInvoices
+            .Include(i => i.Items)
+            .FirstOrDefault(i => i.Id == id);
 
         if (invoice == null)
             return NotFound(new { message = "Invoice not found." });
@@ -197,19 +205,85 @@ public class SalesInvoiceController : ControllerBase
         if (string.IsNullOrWhiteSpace(invoice.CustomerEmail))
             return BadRequest(new { message = "Customer email not found." });
 
+        var pdfBytes = _invoicePdfService.GenerateInvoicePdf(
+            invoice.Id,
+            invoice.CustomerName,
+            invoice.CustomerEmail,
+            invoice.FinalAmount
+        );
+
         _emailService.SendInvoiceEmail(
             invoice.CustomerEmail,
             invoice.CustomerName,
             invoice.Id,
-            invoice.FinalAmount
+            invoice.FinalAmount,
+            pdfBytes
         );
 
         invoice.EmailSent = true;
         _context.SaveChanges();
 
-        return Ok(new { message = "Invoice email sent successfully." });
+        return Ok(new { message = "Invoice email with PDF sent successfully." });
+    }
+    [HttpPost("send-credit-reminders")]
+    public IActionResult SendCreditReminders()
+    {
+        var oneMonthAgo = DateTime.UtcNow.AddMonths(-1);
+
+        var overdueInvoices = _context.SalesInvoices
+            .Where(i =>
+                (i.PaymentStatus == "Credit" || i.PaymentStatus == "Pending") &&
+                i.InvoiceDate <= oneMonthAgo &&
+                !string.IsNullOrWhiteSpace(i.CustomerEmail)
+            )
+            .ToList();
+
+        if (overdueInvoices.Count == 0)
+        {
+            return Ok(new
+            {
+                message = "No overdue credit or pending invoices found.",
+                remindersSent = 0
+            });
+        }
+
+        foreach (var invoice in overdueInvoices)
+        {
+            _emailService.SendCreditReminderEmail(
+                invoice.CustomerEmail,
+                invoice.CustomerName,
+                invoice.Id,
+                invoice.FinalAmount,
+                invoice.InvoiceDate
+            );
+        }
+
+        return Ok(new
+        {
+            message = "Credit reminder emails sent successfully.",
+            remindersSent = overdueInvoices.Count
+        });
+    }
+    
+    [HttpPost("{id}/make-overdue")]
+    public IActionResult MakeInvoiceOverdue(int id)
+    {
+        var invoice = _context.SalesInvoices.FirstOrDefault(i => i.Id == id);
+
+        if (invoice == null)
+            return NotFound(new { message = "Invoice not found." });
+
+        invoice.InvoiceDate = DateTime.UtcNow.AddMonths(-2);
+
+        _context.SaveChanges();
+
+        return Ok(new
+        {
+            message = "Invoice marked as overdue successfully."
+        });
     }
 }
+
 
 public class SalesInvoiceRequest
 {

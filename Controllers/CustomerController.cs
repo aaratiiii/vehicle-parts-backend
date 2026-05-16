@@ -24,13 +24,21 @@ public class CustomerController : ControllerBase
             string.IsNullOrWhiteSpace(request.PhoneNumber) ||
             string.IsNullOrWhiteSpace(request.VehicleNumber))
         {
-            return BadRequest(new { message = "Please fill all required fields." });
+            return BadRequest(new
+            {
+                message = "Please fill all required fields."
+            });
         }
 
         var emailExists = _context.Users.Any(u => u.Email == request.Email);
 
         if (emailExists)
-            return BadRequest(new { message = "Email already exists." });
+        {
+            return BadRequest(new
+            {
+                message = "Email already exists."
+            });
+        }
 
         var user = new User
         {
@@ -78,7 +86,10 @@ public class CustomerController : ControllerBase
         _context.Appointments.Add(appointment);
         _context.SaveChanges();
 
-        return Ok(new { message = "Appointment booked successfully." });
+        return Ok(new
+        {
+            message = "Appointment booked successfully."
+        });
     }
 
     [HttpGet("appointments/{customerId}")]
@@ -92,6 +103,29 @@ public class CustomerController : ControllerBase
         return Ok(appointments);
     }
 
+    [HttpDelete("appointments/{id}")]
+    public IActionResult DeleteAppointment(int id)
+    {
+        var appointment = _context.Appointments
+            .FirstOrDefault(a => a.Id == id);
+
+        if (appointment == null)
+        {
+            return NotFound(new
+            {
+                message = "Appointment not found."
+            });
+        }
+
+        _context.Appointments.Remove(appointment);
+        _context.SaveChanges();
+
+        return Ok(new
+        {
+            message = "Appointment deleted successfully."
+        });
+    }
+
     [HttpGet("all-appointments")]
     public IActionResult GetAllAppointments()
     {
@@ -101,6 +135,7 @@ public class CustomerController : ControllerBase
             {
                 a.Id,
                 a.CustomerId,
+
                 CustomerName = _context.Customers
                     .Where(c => c.Id == a.CustomerId)
                     .Select(c => c.FullName)
@@ -232,10 +267,16 @@ public class CustomerController : ControllerBase
     [HttpGet("history/{customerId}")]
     public IActionResult GetPurchaseServiceHistory(int customerId)
     {
-        var customer = _context.Customers.FirstOrDefault(c => c.Id == customerId);
+        var customer = _context.Customers
+            .FirstOrDefault(c => c.Id == customerId);
 
         if (customer == null)
-            return NotFound(new { message = "Customer not found." });
+        {
+            return NotFound(new
+            {
+                message = "Customer not found."
+            });
+        }
 
         var appointments = _context.Appointments
             .Where(a => a.CustomerId == customerId)

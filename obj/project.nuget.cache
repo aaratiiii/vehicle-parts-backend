@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "QVkyYzkyhQ0=",
+  "dgSpecHash": "/03NC2LT/LM=",
   "success": true,
   "projectFilePath": "/Users/aaratidhakal/RiderProjects/VehiclePartsSystem/VehicleParts.API/VehicleParts.API.csproj",
   "expectedPackageFiles": [
@@ -30,6 +30,7 @@
     "/Users/aaratidhakal/.nuget/packages/newtonsoft.json/13.0.3/newtonsoft.json.13.0.3.nupkg.sha512",
     "/Users/aaratidhakal/.nuget/packages/npgsql/10.0.2/npgsql.10.0.2.nupkg.sha512",
     "/Users/aaratidhakal/.nuget/packages/npgsql.entityframeworkcore.postgresql/10.0.1/npgsql.entityframeworkcore.postgresql.10.0.1.nupkg.sha512",
+    "/Users/aaratidhakal/.nuget/packages/questpdf/2026.5.0/questpdf.2026.5.0.nupkg.sha512",
     "/Users/aaratidhakal/.nuget/packages/swashbuckle.aspnetcore/10.1.7/swashbuckle.aspnetcore.10.1.7.nupkg.sha512",
     "/Users/aaratidhakal/.nuget/packages/swashbuckle.aspnetcore.swagger/10.1.7/swashbuckle.aspnetcore.swagger.10.1.7.nupkg.sha512",
     "/Users/aaratidhakal/.nuget/packages/swashbuckle.aspnetcore.swaggergen/10.1.7/swashbuckle.aspnetcore.swaggergen.10.1.7.nupkg.sha512",

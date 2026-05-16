@@ -23,6 +23,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<InvoicePdfService>();
 
 var app = builder.Build();
 
